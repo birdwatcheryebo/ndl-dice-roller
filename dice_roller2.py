@@ -146,13 +146,14 @@ def AddSub(sets):
 def preParenth(sets):
     while '(' in sets:
         # while we can still find a '(', we haven't dealt with all parentheses yet
-        openP = sets.index('(')
-        closeP = len(sets) - sets[::-1].index(')')
-        # name the indeces for easier typing next line
-        sets[openP:closeP+1] = preParenth(sets[openP+1:closeP])
-        # replace from the first'(' to the last ')', inclusive, with
-        # preParenth()'s evaluation of everything 
-        # from the first '(' to the last ')', exclusive
+        openP = len(sets) - sets[::-1].index('(')
+        # find the last '(' to appear
+        closeP = openP + sets[openP:].index(')')
+        # find the first ')' to appear after the last '(',
+        # these MUST be a linked pair
+        sets[openP-1:closeP+1] = preParenth(sets[openP:closeP])
+        # replaces from '(' in question to ')' in question, inclusive,
+        # with preParenth's evaluation of '(' to '), exclusive
     return AddSub(MultDiv(sets))
     # when we can't find anymore parentheses to evaluate, 
     # evaluate mult/div, then add/sub on what we get from that
