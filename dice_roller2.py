@@ -93,6 +93,25 @@ def evalSets(call):
             # if it's not a dice obejct, add it to evalLst unchanged
     return evalLst
 
+def evalFnl(call):
+    evalLst = []
+    fltdSets = [x for x in partSets(call) if x != '']
+    for i in fltdSets:
+        if i[0].isdigit():
+        # if the first character of i is a digit, 
+        # i should be a dice object or a fixed number
+            if len(i) == 1:
+                evalLst.append(int(i[0]))
+                # if it's a fixed number, return it as not a list
+            else:
+                evalLst.append(rollSets(extractDice(i)))
+                # if it's a dice object, treat it normally
+        else:
+            evalLst.append(i)
+    return evalLst
+# this is a modified clone of evalSets, for the final output formatting only
+# it keeps brakcets for dice rolled but removes them for fixed numbers from the input
+
 def sumSets(call):
     sumdLst = []
     # initialize
@@ -167,16 +186,14 @@ def Roll(call):
     # perform all the calculations on the summed sets of rolls
     rolledExpr = ''
     # initialize
-    for i in rolledExprLst:
+    for i in evalFnl(callStr):
         rolledExpr += (str(i))
-    # turn everything into a string
-    print(f'Rolling:\n{callStr}   -->\n{rolledExpr} =\n{fnlUnrnd}, or {int(fnlUnrnd[0]//1)}.')
+    # turn everything into a string, using output-only version of evalSets
+    return f'Rolling:\n{callStr}   -->\n{rolledExpr} =\n{fnlUnrnd}, or {int(fnlUnrnd[0]//1)}.'
     # return final formatted string: 
     # 'Rolling:
     # {whitespace-stripped input}   -->
     # {input with dice objects replaced by their rolls} = 
     # {final calculated value}, or {DnD rounded-down value}
-
-
 
 print('done')

@@ -1,3 +1,5 @@
+import dice_roller2
+
 # trying to get a more robust parser and learn how to call files
 ErrDict = {}
 ErrDict['parentheses syntax'] = 'Looks like some parentheses are missing'
@@ -139,9 +141,10 @@ def msgTimes(call):
             callAcc += (call[i] + '*')
         else:
             callAcc += call[i]
+    
+    callAcc += call[-1]
     if callAcc != call:
         ErrLst.append('missing *')
-    callAcc += call[-1]
     return callAcc
 
 def divOCheck(call):
@@ -172,7 +175,17 @@ def SpecErrMsg():
 def DiceParse(Str):
     return conscOp(msgTimes(fillMsngD(divOCheck(pbSwitch(nullPrnthCheck(prnthCheck(removeChaff(Str))))))))
 
-
+def R(call):
+    parsed = DiceParse(call)
+    ErrMsg = ''
+    if ErrLst == []:
+        ErrMsg = ErrDict['']
+    elif len(ErrLst) == 1:
+        ErrMsg = 'Uh oh!\n' + ErrDict[ErrLst[0]] + '\nI tried to fix it:'
+    else:
+        ErrMsg = 'Uh oh!  several syntax problems were encountered:\n' + ', '.join(ErrLst) + '\nI tried to fix them:'
+    
+    print(f'{ErrMsg}' + f'{dice_roller2.Roll(parsed)}')
 
 
 print('done')
