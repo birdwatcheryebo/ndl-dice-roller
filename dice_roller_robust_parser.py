@@ -185,7 +185,7 @@ def R(call):
     else:
         ErrMsg = 'Uh oh!  several syntax problems were encountered:\n' + ', '.join(ErrLst) + '\nI tried to fix them:'
     
-    print(f'{ErrMsg}' + f'{dice_roller2.Roll(parsed)}')
+    print(f'{ErrMsg} \n{dice_roller2.Roll(parsed)}')
 
 
 print('done')
