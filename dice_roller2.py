@@ -19,7 +19,7 @@ def extractDice(call):
             call = call[1:]
     currDice.append(int(currNumD))
     # curr(ent)Dice is now a list holding as its first and only entry
-    # the number of dice we're dealig with
+    # the number of dice we're dealing with
 
     if call[0] == 'd':
         call = call[1:]
@@ -93,22 +93,22 @@ def evalSets(call):
             # if it's not a dice obejct, add it to evalLst unchanged
     return evalLst
 
-def evalFnl(call):
-    evalLst = []
-    fltdSets = [x for x in partSets(call) if x != '']
-    for i in fltdSets:
-        if i[0].isdigit():
-        # if the first character of i is a digit, 
-        # i should be a dice object or a fixed number
-            if len(i) == 1:
-                evalLst.append(int(i[0]))
-                # if it's a fixed number, return it as not a list
-            else:
-                evalLst.append(rollSets(extractDice(i)))
-                # if it's a dice object, treat it normally
-        else:
-            evalLst.append(i)
-    return evalLst
+# def evalFnl(call):
+#     evalLst = []
+#     fltdSets = [x for x in partSets(call) if x != '']
+#     for i in fltdSets:
+#         if i[0].isdigit():
+#         # if the first character of i is a digit, 
+#         # i should be a dice object or a fixed number
+#             if len(i) == 1:
+#                 evalLst.append(int(i[0]))
+#                 # if it's a fixed number, return it as not a list
+#             else:
+#                 evalLst.append(rollSets(extractDice(i)))
+#                 # if it's a dice object, treat it normally
+#         else:
+#             evalLst.append(i)
+#     return evalLst
 # this is a modified clone of evalSets, for the final output formatting only
 # it keeps brakcets for dice rolled but removes them for fixed numbers from the input
 
@@ -186,8 +186,29 @@ def Roll(call):
     # perform all the calculations on the summed sets of rolls
     rolledExpr = ''
     # initialize
-    for i in evalFnl(callStr):
+    for i in rolledExprLst:
         rolledExpr += (str(i))
+
+    # fxdNumFrmt = []
+    # for i in range(len(rolledExpr)):
+    #     if i == 0:
+    #         if rolledExpr[i][0]+rolledExpr[i+1][0] in call:
+    #             fxdNumFrmt.append(str(rolledExprLst[i][0]))
+    #         else:
+    #             fxdNumFrmt.append(rolledExpr[i])
+    #     elif i == (len(rolledExpr) - 1):
+    #         if rolledExpr[i-1][0]+rolledExpr[i][0] in call:
+    #             fxdNumFrmt.append(str(rolledExprLst[i][0]))
+    #         else:
+    #             fxdNumFrmt.append(rolledExpr[i])
+    #     else:
+    #         if rolledExpr[i-1][0]+rolledExpr[i][0]+rolledExpr[i+1][0] in call:
+    #             fxdNumFrmt.append(str(rolledExprLst[i][0]))
+    #         else:
+    #             fxdNumFrmt.append(rolledExpr[i])
+        
+    # frmtFxdNums = ''.join(fxdNumFrmt)
+
     # turn everything into a string, using output-only version of evalSets
     return f'Rolling:\n{callStr}   -->\n{rolledExpr} =\n{fnlUnrnd}, or {int(fnlUnrnd[0]//1)}.'
     # return final formatted string: 

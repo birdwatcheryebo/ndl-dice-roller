@@ -1,6 +1,4 @@
 import dice_roller2
-import dice_roller3 as zandall
-# import time
 
 # trying to get a more robust parser and learn how to call files
 ErrDict = {}
@@ -193,27 +191,5 @@ def R(call):
     
     print(f'{ErrMsg} \n{dice_roller2.Roll(parsed)}')
 
-def RT(call):
-    ErrLst.clear()
-    parsed = DiceParse(call)
-    ErrMsg = ''
-    if ErrLst == []:
-        ErrMsg = ErrDict['']
-    elif len(ErrLst) == 1:
-        ErrMsg = 'Uh oh!\n' + ErrDict[ErrLst[0]] + '\nI tried to fix it:'
-    else:
-        ErrMsg = 'Uh oh!  several syntax problems were encountered:\n' + ', '.join(ErrLst) + '\nI tried to fix them:'
-    
-    print(f'{ErrMsg} \n{zandall.main(parsed)}')
-
-# start_time = time.time()
-
-# for i in range(1000):
-#     R('((3d10 4d4)/5 + 2(4d20/3)/(3d6 4))/(69')
-#     RT('((3d10 4d4)/5 + 2(4d20/3)/(3d6 4))/(69')
-#     print(i)
-
-
-# print("--- %s seconds ---" % (time.time() - start_time))
 
 print('done')
