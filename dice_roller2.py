@@ -189,26 +189,6 @@ def Roll(call):
     for i in rolledExprLst:
         rolledExpr += (str(i))
 
-    # fxdNumFrmt = []
-    # for i in range(len(rolledExpr)):
-    #     if i == 0:
-    #         if rolledExpr[i][0]+rolledExpr[i+1][0] in call:
-    #             fxdNumFrmt.append(str(rolledExprLst[i][0]))
-    #         else:
-    #             fxdNumFrmt.append(rolledExpr[i])
-    #     elif i == (len(rolledExpr) - 1):
-    #         if rolledExpr[i-1][0]+rolledExpr[i][0] in call:
-    #             fxdNumFrmt.append(str(rolledExprLst[i][0]))
-    #         else:
-    #             fxdNumFrmt.append(rolledExpr[i])
-    #     else:
-    #         if rolledExpr[i-1][0]+rolledExpr[i][0]+rolledExpr[i+1][0] in call:
-    #             fxdNumFrmt.append(str(rolledExprLst[i][0]))
-    #         else:
-    #             fxdNumFrmt.append(rolledExpr[i])
-        
-    # frmtFxdNums = ''.join(fxdNumFrmt)
-
     # turn everything into a string, using output-only version of evalSets
     return f'Rolling:\n{callStr}   -->\n{rolledExpr} =\n{fnlUnrnd}, or {int(fnlUnrnd[0]//1)}.'
     # return final formatted string: 

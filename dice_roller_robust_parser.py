@@ -96,7 +96,7 @@ def fillMsngD(call):
         # if char is a 'd' followed by a number, just add it
         elif (not(call[i].isdigit()) and (call[i+1] == 'd')):
             callAcc += (call[i] + '1')
-        # if cahr is a non-number followed by a 'd', 
+        # if char is a non-number followed by a 'd', 
         # add it followed by a '1' before looking at the 'd'
         else:
             callAcc += call[i]
