@@ -62,14 +62,34 @@ def wsStrip(Str):
     #  since we've only indexed up to the next-to-last
     return StrAcc2
 
+def verbalOp(call):
+    call = call.lower()
+    if 'plus' in call:
+        call = call.replace('plus', '+')
+    if 'minus' in call:
+        call = call.replace('minus', '-')
+    if 'less' in call:
+        call = call.replace('less', '-')
+    if 'times' in call:
+        call = call.replace('times', '*')
+    if 'div by' in call:
+        call = call.replace('div by', '/')
+    if 'by' in call:
+        call = call.replace('by', '/')
+    # if '.' in call:
+    #     call = call.replace('.', '+(1/10)*')
+    # handles 1 decimal place great, more places... not as much
+    # '0.87' becomes 0 + 87 so yeah...
+    return '(' + call + ')'
+
 def removeChaff(call):
     callAcc = ''
     for i in call:
         if i.isdigit():
             callAcc += i
-        elif i in 'Dd':
+        elif i in 'd':
             callAcc += 'd'
-        elif i in '*xX':
+        elif i in '*x':
             callAcc += '*'
         elif i in '()/+- ':
             callAcc += i
@@ -180,7 +200,8 @@ def msgTimes(call):
     callAcc = ''
     for i in range(len(call)-1):
         if ((call[i].isdigit() and (call[i+1] == '(')) or 
-        ((call[i] == ')') and call[i+1].isdigit())):
+        ((call[i] == ')') and (call[i+1].isdigit() or 
+                                call[i+1] == '('))):
             callAcc += (call[i] + '*')
         # add '*' between consecutive chars if they are:
         # number followed by '(', or 
@@ -230,7 +251,7 @@ def SpecErrMsg():
 # run chaff first, then d or parenth check,
 # then the other, then null parenth, then consec op/missing *?
 def DiceParse(Str):
-    return conscOp(msgTimes(fillMsngD(divOCheck(pbSwitch(nullPrnthCheck(prnthCheck(removeChaff(Str))))))))
+    return conscOp(msgTimes(fillMsngD(divOCheck(pbSwitch(nullPrnthCheck(prnthCheck(removeChaff(verbalOp(Str)))))))))
 
 def R(call):
     ErrLst.clear()
@@ -269,6 +290,21 @@ def RT(call):
         ErrMsg = 'Uh oh!  several syntax problems were encountered:\n' + ', '.join(ErrLst) + '\nI tried to fix them:'
     
     print(f'{ErrMsg} \n{zandall.main(parsed)}')
+
+# while True:
+    
+#     frstPrompt = input("Do you want to use R or RT?  ")
+    
+#     if frstPrompt == 'quit':
+#         break
+
+#     scndPrompt = input("What are we rollin'?  ")
+    
+#     if frstPrompt == 'R':
+#         print(R(scndPrompt))
+#     elif frstPrompt == 'RT':
+#         print(RT(scndPrompt))
+    
 
 # start_time = time.time()
 
