@@ -60,7 +60,7 @@ def diceRoll(n,k):
     return [rolls, sum(rolls)]
     # returns the list of rolls for later formatting, and their sum
 
-def evalDice(lst):
+def evalDice(lst,rolledDice):
     dInd = lst.index(['d','d op'])
     # finds the first 'd' operator in the list so far
 
@@ -73,69 +73,87 @@ def evalDice(lst):
         # if the first thing is a 'd' operator,
         if len(lst) == 1:
             # AND the 'd' operator is the only thing in the list
-            return diceRoll(1,20)[1]
-            # roll 1d20
+            roll = diceRoll(1,20)
+            # roll 1d20,
+            # add the list of rolls to the list of lists, and
+            # return the sum of the rolls
         else:
             # only missing the number of dice
-            return diceRoll(1,int(firsts[1:]))[1]
+            roll = diceRoll(1,int(firsts[1:]))
             # roll 1d[given k]
     elif dInd == len(lst)-1:
         # if the last thing is the 'd' operator,
-        return diceRoll(int(firsts[:-1]),20)[1]
-            # roll [given n]d20
+        roll = diceRoll(int(firsts[:-1]),20)
+        # roll [given n]d20
     else:
         # 'd' operator neither first nor last means both n and k are present
-        return diceRoll(int(firsts[:dInd]),int(firsts[dInd+1:]))[1]
-            # roll [given n]d[given k]
+        roll = diceRoll(int(firsts[:dInd]),int(firsts[dInd+1:]))
+        
+    return [roll[1],rolledDice.append(roll[0])]
+        # roll [given n]d[given k]
 
+# this decides what the next operator needs to be resolved,
+# and returns its index 
 def firstOp(lst):
-    lasts = []
+    opInd = "nope"
+    # default if no operators are found 
+    firsts = []
     for i in lst:
-        lasts.append(i[1])
-        # builds a list of the just classifications in typesList
+        firsts.append(i[0])
+        # builds a list of characters in typesList
 
-    if 'oper' in lasts:
-        opInd = lasts.index('oper')
-        # find the index of the first operator, if one exists
-    else:
-        opInd = "nope"
-        # if none exists, return the string 'nope'
-
+    for char in firsts:
+        if char in '+-':
+            return firsts.index(char)
+    # check through all characters and returns 
+    # the index of the first multiplicative operator in the list
+    
+    for char in firsts:
+        if char in '*/':
+            return firsts.index(char)
+    # if we get here, no multiplicative operators were found
+    # check through all characters and returns 
+    # the index of the first additive operator in the list
+        
     return opInd
+    # this is now the highest piority item from these options:
+    # the index of the first multiplicative operator, if there is one, OR
+    # the index of the first additive operators, if there is one, OR 
+    # the string 'nope', meaning there are no normal operators 
     
 
 # this will take in types list
-def evalExp(lst):
-
+def evalExp(lst,rolledDice):
+    
     # cases for evalExp:
     # 1:  expression surrounded by parentheses
     #     ["(","EXP",")"],
     # 2:  expression is a number
     #     ["number"],
-    # ["D"],
-    # ["EXP", "OP", "EXP"]
+    # 3:  expressions combined by operator
+    #     ["EXP", "OP", "EXP"],
+    # 4:  a basic dice unit
+    #     ["D"] 
 
-    st = 0
-    closerNE = True
-
+    offset = 0
+    # initial state for index offset used to handle
+    # case 1:   ["(","EXP",")"]       vs
+    # case 3:   ["EXP", "OP", "EXP"] 
+    # print(lst)
     if lst[0][1] == 'oprn':
         # if the list starts with '(', 
         # we're in case 1: ["(","EXP",")"]
         closer = pairPrnt(lst)
         # find index of corresponding ')'
         if closer == len(lst)-1:
-            return evalExp(lst[1:-1])
+            return evalExp(lst[1:-1],rolledDice)
             # if that ')' is the last thing in the list,
             # just evaluate everything between the pars, exclusively 
-        
         else:
-            st = 1
-            closerNE = False
-            # exp1 = evalExp(lst[1:closer])
-            # op = lst[closer+1][0]
-            # exp2 = evalExp(lst[closer+2:])
-            # return eval(str(exp1) + op + str(exp2))
-
+            # there are parentheses, but they don't enclose the entire list  
+            offset = 1
+            # used to exclude parentheses in evaluation of what's between them
+            
     if checkFirsts(lst):
         # if all the characters listed are digits,
         # we're in case 2: ["number"]
@@ -143,11 +161,11 @@ def evalExp(lst):
         for i in lst:
             num += i[0]
         # concatenate them, and
-        return int(num)
+        return [int(num),rolledDice]
         # return the number they represent
     
 
-    if closerNE:
+    if not(offset):
         fOp = firstOp(lst)
     else:
         fOp = closer
@@ -155,20 +173,33 @@ def evalExp(lst):
     # or to the string 'nope' if no operator is found 
 
     if fOp != 'nope':
-        exp1 = evalExp(lst[st:fOp])
-        op = lst[fOp+st][0]
-        exp2 = evalExp(lst[fOp+st+1:])
-        print(f'{exp1} {op} {exp2}')
-        return eval(str(exp1) + op + str(exp2))
-    
-    return evalDice(lst)
+        exp1 = evalExp(lst[:fOp+offset],rolledDice)
+        # evaluates everything to the left 
+        # of the lowest-priority operator first
+        op = lst[fOp+offset][0]
+        # desigates lowest-priority operator
+        exp2 = evalExp(lst[fOp+offset+1:],rolledDice)
+        # evaluates everything to the right 
+        # of the lowest-priority operator first
+        return [eval(str(exp1[0]) + op + str(exp2[0])),rolledDice]
+        # combines pre-evaluated chunks
 
-# currently DOES NOT follow order of operations
-# wrt */ vs +-
-# calculates every arithmetic operator in order from R --> L
-# once they are on the same level wrt parentheses   
+    # if we're not in any of the previous cases, 
+    # we're in case 4:  ["D"]
+    return evalDice(lst,rolledDice)  
 
 def main(call):
-    return evalExp(cfgParser(call)) 
+    rolledDice = []
+    # initialized accumulator here, used to keep track of the actual individual die rolls
+    # it has to be an additional argument in evalExp,
+    # but is only actually changed in evalDice 
+    fnlUnrnd = evalExp(cfgParser(call),rolledDice)
+    # returns a tuple of (final value, list of lists of rolls)
+    # fnlUnrnd = evalExp(cfgParser(call),rolledDice)[0]
+    rollsDisplay = str(fnlUnrnd[1]).replace('], [',']\n[')
+    # displays the sets of dice rolls on a new line per set
+    valDisplay = fnlUnrnd[0]
+    # displays the final value
+    return f'Rolling:\n{call}\n{rollsDisplay} =\n{valDisplay}, or {int(valDisplay//1)}.' 
 
 print('done')
